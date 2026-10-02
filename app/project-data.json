@@ -1,0 +1,32 @@
+{
+  "projects": [
+    {
+      "name": "Northstar Onboarding",
+      "owner": "Maya Chen",
+      "status": "Active",
+      "recentActivity": "Released the guided setup flow to the internal preview group.",
+      "priority": "High"
+    },
+    {
+      "name": "Insights Workspace",
+      "owner": "Jordan Patel",
+      "status": "Planning",
+      "recentActivity": "Validated the first dashboard wireframes with three customer teams.",
+      "priority": "Medium"
+    },
+    {
+      "name": "Mobile Performance",
+      "owner": "Alex Rivera",
+      "status": "Blocked",
+      "recentActivity": "Waiting on the API caching change before beginning the final benchmark.",
+      "priority": "High"
+    },
+    {
+      "name": "Support Toolkit",
+      "owner": "Sam Okafor",
+      "status": "Complete",
+      "recentActivity": "Published the updated troubleshooting guide and handoff checklist.",
+      "priority": "Low"
+    }
+  ]
+}

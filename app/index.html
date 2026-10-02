@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A concise overview of current project progress, ownership, activity, and priority.">
+    <title>Project Pulse</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="dashboard">
+      <header class="dashboard-header">
+        <p class="dashboard-eyebrow">Team overview</p>
+        <h1 class="dashboard-title">Project Pulse</h1>
+        <p class="dashboard-subtitle">
+          A quick view of what the team is moving forward, who owns it, and where attention is needed.
+        </p>
+      </header>
+
+      <section aria-labelledby="projects-heading">
+        <h2 id="projects-heading" class="dashboard-eyebrow">Projects</h2>
+        <div id="project-state" class="loading-state" role="status" aria-live="polite">
+          Loading projects…
+        </div>
+        <div id="project-grid" class="project-grid" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <script>
+      (() => {
+        const state = document.querySelector("#project-state");
+        const grid = document.querySelector("#project-grid");
+
+        const normalizeClassName = (value) =>
+          String(value).trim().toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+        const createProjectCard = (project) => {
+          const card = document.createElement("article");
+          card.className = "project-card";
+
+          const header = document.createElement("header");
+          header.className = "project-card-header";
+
+          const headingGroup = document.createElement("div");
+          const title = document.createElement("h3");
+          title.className = "project-card-title";
+          title.textContent = project.name;
+          const owner = document.createElement("p");
+          owner.className = "project-owner";
+          owner.append("Owner: ");
+          const ownerName = document.createElement("strong");
+          ownerName.textContent = project.owner;
+          owner.append(ownerName);
+          headingGroup.append(title, owner);
+
+          const status = document.createElement("span");
+          status.className = `project-status status-${normalizeClassName(project.status)}`;
+          status.dataset.status = normalizeClassName(project.status);
+          status.textContent = project.status;
+          status.setAttribute("aria-label", `Status: ${project.status}`);
+          header.append(headingGroup, status);
+
+          const body = document.createElement("div");
+          body.className = "project-card-body";
+          const activity = document.createElement("p");
+          activity.className = "project-activity";
+          const activityLabel = document.createElement("span");
+          activityLabel.className = "project-activity-label";
+          activityLabel.textContent = "Recent activity";
+          activity.append(activityLabel, project.recentActivity);
+          body.append(activity);
+
+          const footer = document.createElement("footer");
+          footer.className = "project-card-footer";
+          const priorityLabel = document.createElement("span");
+          priorityLabel.className = "priority-label";
+          priorityLabel.textContent = "Priority";
+          const priority = document.createElement("span");
+          priority.className = `project-priority priority-${normalizeClassName(project.priority)}`;
+          priority.dataset.priority = normalizeClassName(project.priority);
+          priority.textContent = project.priority;
+          priority.setAttribute("aria-label", `Priority: ${project.priority}`);
+          footer.append(priorityLabel, priority);
+
+          card.append(header, body, footer);
+          return card;
+        };
+
+        const showState = (message, className) => {
+          state.className = className;
+          state.textContent = message;
+          state.hidden = false;
+        };
+
+        fetch("project-data.json")
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Project data request failed (${response.status})`);
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (!data || !Array.isArray(data.projects)) {
+              throw new Error("Project data must contain a projects array.");
+            }
+
+            if (data.projects.length === 0) {
+              showState("No projects are available yet.", "empty-state");
+              return;
+            }
+
+            const fragment = document.createDocumentFragment();
+            data.projects.forEach((project) => fragment.append(createProjectCard(project)));
+            grid.append(fragment);
+            state.hidden = true;
+          })
+          .catch((error) => {
+            console.error(error);
+            showState("Projects could not be loaded. Please try again later.", "error-state");
+          });
+      })();
+    </script>
+  </body>
+</html>
